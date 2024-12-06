@@ -4,12 +4,19 @@ import Button from "../component/Button";
 import ICON from "../icon";
 import InputBox from "../component/InputBox";
 import "./SignUp.css";
+import { register } from "../api/auth";
 
 function SignUpPage() {
     const navigate = useNavigate();
 
-    const handleSignUpClick = () => {
-        navigate("/LogIn"); // 회원가입 버튼 클릭 시 "/main" 페이지로 이동
+    const handleSignUpClick = async () => {
+        try {
+            const response = await register({ username: '', password: '', id: '', user_protecter: true})
+            console.log(response);
+            navigate("/LogIn"); 
+        } catch {
+            console.log("Error register account")
+        }
     };
 
     return (
