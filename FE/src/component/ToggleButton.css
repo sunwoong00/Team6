@@ -1,0 +1,41 @@
+/* 기본 버튼 스타일 */
+.toggle-button {
+    background: #c3c3c3;
+    border-radius: 100px;
+    border-style: solid;
+    border-color: #ffffff;
+    border-width: 5px;
+    width: 106px;
+    height: 45px;
+    position: relative;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+/* 버튼이 활성화될 때 */
+.toggle-button.active {
+    background: #5db075;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* 동그라미(슬라이더) 기본 스타일 */
+.circle {
+    width: 35px;
+    height: 35px;
+    background: #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translate(0, -50%);
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 동그라미가 활성화될 때 */
+.toggle-button.active .circle {
+    left: calc(100% - 40px); /* 동그라미가 오른쪽 끝으로 이동 */
+    background: #ffffff;
+}
