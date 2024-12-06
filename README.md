@@ -14,7 +14,7 @@
 
 ##### Backend
 * FastAPI기반 안전도우미 backend 코드
-* firebase DB
+* firebase기반 데이터베이스 구축
 
 ##### LLM
 
