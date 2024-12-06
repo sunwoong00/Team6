@@ -46,7 +46,7 @@ def speech_to_text(file_path: str) -> str:
     :param file_path: 음성 파일 경로
     :return: 변환된 텍스트
     """
-    model = whisper.load_model("base")
+    model = whisper.load_model("tiny")
     # print("음성 파일을 텍스트로 변환 중입니다...")
     result = model.transcribe(file_path, language="ko")
     text = result["text"]

@@ -1,4 +1,6 @@
 import ollama
+import google.generativeai as genai
+genai.configure(api_key="AIzaSyDTEl1c4xHY0VtPrPZptIvVZAFOulgcSxA")
 
 def response_prompt(text):
     base_prompt_1 = '''아래는 STT로 변환된 대화 내용입니다. 이 대화 내용을 정리하여 불필요한 내용(중복된 대화, 의미 없는 표현, 배경 소음 등)을 제거해주세요. 중요한 내용은 간결하게 표현해 주시고, 불필요한 반복이나 맥락 없는 문장은 삭제해주세요.
@@ -22,9 +24,16 @@ def response_prompt(text):
     base_prompt_2 = '''출력:'''
     return base_prompt_1 + text + '\n\n' + base_prompt_2
 
+# def slm_response(text):
+#     stream = ollama.generate(model='llama3.2:1b', prompt=response_prompt(text))
+#     print(stream['response'])
+#     return stream['response']
+
 def slm_response(text):
-    stream = ollama.generate(model='llama3.2:3b', prompt=response_prompt(text))
-    return stream['response']
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(response_prompt(text))
+    #print(response.text)
+    return response.text
 
 # 위험상황 예시
-print(slm_response("길을 잃은 것 같아요 어... 여기가 어디인지 모르겠어요 아... 음 핸드폰 배터리도 거의 다 떨어졌어요 주변에 사람이 있나요 아니요 어... 지나가던 사람이 도와준다고 하긴 했는데 어... 어... 계속 이상한 말을 하고 있어서 무서워요 어 음... 가까운 가게나 사람들이 있는 곳으로 이동할 수 있나요 지금 너무 멀어서 어... 음... 갈 수 없어요"))
+# print(slm_response("길을 잃은 것 같아요 어... 여기가 어디인지 모르겠어요 아... 음 핸드폰 배터리도 거의 다 떨어졌어요 주변에 사람이 있나요 아니요 어... 지나가던 사람이 도와준다고 하긴 했는데 어... 어... 계속 이상한 말을 하고 있어서 무서워요 어 음... 가까운 가게나 사람들이 있는 곳으로 이동할 수 있나요 지금 너무 멀어서 어... 음... 갈 수 없어요"))
