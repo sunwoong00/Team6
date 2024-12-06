@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from pydantic import BaseModel, EmailStr
 import firebase_admin
 from firebase_admin import credentials, db
@@ -94,3 +94,41 @@ async def get_info(username: str = Query(..., description="The username to searc
 # /gps 엔드포인트
 @app.post("/gps")
 '''
+
+# /upload-stt 엔드포인트
+@app.post("/upload-stt")
+async def upload_stt(file: UploadFile = File(...), username: str = Query(..., description="Username for saving the STT data")):
+    try:
+        # 1. Read the uploaded file
+        file_content = await file.read()
+        stt_text = file_content.decode("utf-8")  # Assuming the file contains text
+        
+        # 2. Retrieve user from Firebase
+        ref = db.reference("users")
+        users = ref.get()
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        user_key = None
+        for key, value in users.items():
+            if value.get("username") == username:
+                user_key = key
+                break
+
+        if user_key is None:
+            raise HTTPException(status_code=404, detail=f"User with username '{username}' not found")
+
+        # 3. Save the STT data in the database
+        user_ref = db.reference(f"users/{user_key}")
+        user_ref.child("stt_entries").push({
+            "original_text": stt_text
+        })
+
+        return {
+            "message": "STT data saved successfully",
+            "original_text": stt_text
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing STT data: {str(e)}")
