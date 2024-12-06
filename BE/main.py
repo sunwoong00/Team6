@@ -4,17 +4,15 @@ from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import firebase_admin
 import requests
-import sys, os
-# llm_response_1 함수 가져오기
-# from ..AI.llm_utils import llm_response_1
-# # llm_utils.py 파일에서 llm_response_2 함수 가져오기
-# from ..AI.llm_utils import llm_response_2
-# # 상대경로를 통해 slm_response 함수 가져오기
-# from ..AI.slm_utils import slm_response
+import sys, os, logging
+import json
 
 sys.path.append(os.path.abspath("../AI"))
 from llm_utils import llm_response_1, llm_response_2
 from slm_utils import slm_response
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 # FastAPI 앱 초기화
 app = FastAPI()
@@ -131,11 +129,15 @@ async def upload_stt(username: str, input_text: str):
         ref = db.reference('users')
         users = ref.get()  # 모든 사용자 데이터 가져오기
 
-        if not users:
+        # Firebase에 데이터가 없는 경우 처리
+        if not users or not isinstance(users, dict):
             raise HTTPException(status_code=404, detail="No users found")
 
         # username에 해당하는 사용자 찾기
         for key, value in users.items():
+            if not isinstance(value, dict):  # value가 dict가 아니면 건너뛰기
+                continue
+
             if value.get("username") == username:
                 # 현재 stt_data 가져오기
                 stt_data = value.get("stt_data", "")
@@ -146,50 +148,79 @@ async def upload_stt(username: str, input_text: str):
                 if len(updated_stt_data) > 350:  # 길이가 350자를 초과하면 처리
                     # SLM 함수 호출
                     summary_response = slm_response(updated_stt_data)
-                    summary = summary_response.get("요약")
 
+                    '''# 반환 값이 딕셔너리인지 확인
+                    if not isinstance(summary_response, dict):
+                        raise HTTPException(status_code=500, detail="SLM response is not a valid dictionary")
+
+                    summary = summary_response.get("요약")'''
+                    summary = summary_response
                     if not summary:
                         raise HTTPException(status_code=400, detail="SLM response does not contain '요약'.")
 
-                    # 요약 데이터를 slm_data에 저장하고 stt_data를 초기화
-                    user_ref.update({
-                        "slm_data": summary,
-                        "stt_data": ""  # stt_data 초기화
-                    })
+                    # SLM 요약 데이터를 기반으로 LLM 함수 호출
+                    llm_response = llm_response_1(summary)
 
-                    return {
-                        "message": "SLM response processed and stored",
-                        "summary": summary,
-                        "stt_data": ""  # 반환 데이터에 초기화된 stt_data 포함
-                    }
-                else:
-                    # 길이가 350자 이하인 경우 업데이트만 수행
-                    user_ref.update({
-                        "stt_data": updated_stt_data
-                    })
+                    '''# 반환 값이 딕셔너리인지 확인
+                    if not isinstance(llm_response, dict):
+                        raise HTTPException(status_code=500, detail="LLM response is not a valid dictionary")'''
 
-                    # LLM 함수 호출
-                    llm_response = llm_response_1(updated_stt_data)
-                    is_risky = llm_response.get("위험", False)
+                    # print(type(llm_response))
 
-                    if is_risky:
+                    # is_risky = llm_response.get("위험", False)
+
+                    print(llm_response)
+
+                    # if isinstance(llm_response, str):
+                    #     try:
+                    #         llm_response = json.loads(llm_response)  # JSON 문자열을 Python dict로 변환
+                    #     except json.JSONDecodeError as e:
+                    #         print(f"JSON 변환 오류: {e}")
+                    #         llm_response = {}  # 변환 실패 시 기본값 설정
+
+                    # 이제 dict로 동작
+                    # print(type(llm_response))  # <class 'dict'>
+                    # llm_response = list(llm_response)
+                    is_risky = llm_response[0]
+
+                    
+                    # print(is_risky)
+                    
+
+                    if is_risky=='T':
                         # "위험"이 True인 경우 "reply" 및 "new" 업데이트
-                        reply = llm_response.get("요약", "")
+                        reply = llm_response.split("\n")[1]
+                        print("reply: " + reply)
                         llm_data = value.get("llm_data", {})
                         user_ref.update({
                             "llm_data": {
-                                **llm_data,  # 기존 llm_data 유지
+                                # **llm_data,  # 기존 llm_data 유지
                                 "reply": reply,
                                 "new": True
                             }
                         })
-
+                        user_ref.update({"stt_data": ""})  # stt_data 초기화
                         return {
                             "message": "LLM response indicates risk. Reply stored in llm_data.",
                             "reply": reply
                         }
 
                     # "위험"이 False인 경우 업데이트만 수행
+                    user_ref.update({
+                        "slm_data": summary,
+                        "stt_data": ""  # stt_data 초기화
+                    })
+                    return {
+                        "message": "SLM and LLM responses processed successfully",
+                        "summary": summary,
+                        "stt_data": ""
+                    }
+
+                else:
+                    # 길이가 350자 이하인 경우 업데이트만 수행
+                    user_ref.update({
+                        "stt_data": updated_stt_data
+                    })
                     return {"message": "STT data updated successfully", "stt_data": updated_stt_data}
 
         # username이 없는 경우
@@ -273,9 +304,15 @@ async def get_llm_response2(input_text: str):
     try:
         # ../AI/llm_utils.py에 정의된 LLM 함수 호출
         response = llm_response_2(input_text)
+        # if isinstance(response, str):
+        #     try:
+        #         response = json.loads(response)  # JSON 문자열을 Python dict로 변환
+        #     except json.JSONDecodeError as e:
+        #         print(f"JSON 변환 오류: {e}")
+        #         response = {}
 
         # JSON 응답에서 "요약" 키 추출
-        summary = response.get("요약")
+        summary = response
         if not summary:
             raise HTTPException(status_code=400, detail="Response does not contain '요약'.")
 
