@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from pydantic import BaseModel, EmailStr
-import firebase_admin
 from firebase_admin import credentials, db
+from dotenv import load_dotenv
+import firebase_admin
+import requests
+import os
 
 # FastAPI 앱 초기화
 app = FastAPI()
@@ -11,6 +14,15 @@ cred = credentials.Certificate("team6-8924e-firebase-adminsdk-vdshl-543124bd12.j
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://team6-8924e-default-rtdb.firebaseio.com/'  # Firebase Realtime Database URL
 })
+
+# .env 파일 로드
+load_dotenv()
+
+# API 키 가져오기
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
+if not GOOGLE_MAPS_API_KEY:
+    raise ValueError("Google Maps API Key is not set in the .env file")
 
 # Pydantic 모델
 class Login(BaseModel):
@@ -23,8 +35,15 @@ class RegisterData(BaseModel):
     password: str
     user_protector: bool
 
+'''class GPSData(BaseModel):
+    username: str
+    latitude: float
+    longitude: float'''
+
 class GPS(BaseModel):
     username: str
+    latitude: float
+    longitude: float
 
 
 # /login 엔드포인트
@@ -58,6 +77,7 @@ async def register(data: RegisterData):
             'password': data.password,
             'user_protector': data.user_protector,
             'gps': None,
+            'address': None,
             'stt_data': None,
             'slm_llm': None,
             'slm_data': None,
@@ -68,7 +88,7 @@ async def register(data: RegisterData):
         raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
 
 # /get_info 엔드포인트
-@app.get("/get_info")
+@app.get("/get-info")
 async def get_info(username: str = Query(..., description="The username to search for")):
     try:
         # Firebase Database 참조
@@ -90,45 +110,85 @@ async def get_info(username: str = Query(..., description="The username to searc
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching user info: {str(e)}")
 
+
 '''
 # /gps 엔드포인트
 @app.post("/gps")
-'''
-
-# /upload-stt 엔드포인트
-@app.post("/upload-stt")
-async def upload_stt(file: UploadFile = File(...), username: str = Query(..., description="Username for saving the STT data")):
+async def update_gps(data: GPSData):
     try:
-        # 1. Read the uploaded file
-        file_content = await file.read()
-        stt_text = file_content.decode("utf-8")  # Assuming the file contains text
-        
-        # 2. Retrieve user from Firebase
-        ref = db.reference("users")
+        # Google Maps Reverse Geocoding API 호출
+        geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            "latlng": f"{data.latitude},{data.longitude}",
+            "key": GOOGLE_MAPS_API_KEY
+        }
+        response = requests.get(geocode_url, params=params)
+        response_data = response.json()
+
+        if response.status_code != 200 or not response_data.get("results"):
+            raise HTTPException(status_code=400, detail="Unable to fetch address from Google Maps API")
+
+        # 주소 정보 추출
+        address = response_data["results"][0]["formatted_address"]
+
+        # Firebase Database에서 username에 해당하는 사용자 찾기
+        ref = db.reference('users')
         users = ref.get()
 
         if not users:
             raise HTTPException(status_code=404, detail="No users found")
 
-        user_key = None
         for key, value in users.items():
-            if value.get("username") == username:
-                user_key = key
-                break
+            if value.get("username") == data.username:
+                # 사용자 데이터 업데이트
+                user_ref = ref.child(key)
+                user_ref.update({
+                    "latitude": data.latitude,
+                    "longitude": data.longitude,
+                    "address": address
+                })
+                return {
+                    "message": f"Location updated for user {data.username}",
+                    "latitude": data.latitude,
+                    "longitude": data.longitude,
+                    "address": address
+                }
 
-        if user_key is None:
-            raise HTTPException(status_code=404, detail=f"User with username '{username}' not found")
-
-        # 3. Save the STT data in the database
-        user_ref = db.reference(f"users/{user_key}")
-        user_ref.child("stt_entries").push({
-            "original_text": stt_text
-        })
-
-        return {
-            "message": "STT data saved successfully",
-            "original_text": stt_text
-        }
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{data.username}' not found")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing STT data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
+        '''
+
+
+# /gps 엔드포인트
+@app.post("/gps")
+async def update_gps(data: GPS):
+    try:
+        # Firebase Database 참조
+        ref = db.reference('users')
+        users = ref.get()  # 모든 사용자 데이터 가져오기
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # username에 해당하는 사용자 찾기 및 업데이트
+        for key, value in users.items():
+            if value.get("username") == data.username:
+                user_ref = ref.child(key)
+                user_ref.update({
+                    "latitude": data.latitude,
+                    "longitude": data.longitude
+                })
+                return {
+                    "message": f"Location updated for user {data.username}",
+                    "latitude": data.latitude,
+                    "longitude": data.longitude
+                }
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{data.username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
