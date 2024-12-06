@@ -17,7 +17,7 @@ const Button: React.FC<InputBoxProps> = ({
     return (
         <div className='input-container'>
             {/* change to label later */}
-            <span className='title'>이름</span> 
+            <span className='title'>{label}</span> 
         <input
             className={`input-box ${className}`} 
             type="text"
