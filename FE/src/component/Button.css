@@ -1,0 +1,22 @@
+.button {
+    width: 360px;
+    height: 58px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preset-text-default {
+    font-size: 16px;
+}
+
+.preset-border-default:focus {
+    outline: none;
+}
