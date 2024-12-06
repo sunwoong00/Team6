@@ -1,51 +1,27 @@
 .button {
-<<<<<<< HEAD
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 350px;
-        height: 60px;
-        background-color: #5DB075;
-        color: black;
-        font-size: 16px;
-        font-weight: 400;
-        padding: 10px;
-        border-radius: 24px;
-        cursor: pointer;
-        box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 그림자 조정 */
-        transition: background-color 0.3s, box-shadow 0.3s;
-        border: 2px solid black; /* 검은색 테두리 추가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 350px;
+    height: 60px;
+    background-color: #5DB075;
+    color: black;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 10px;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 그림자 조정 */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    border: 2px solid black; /* 검은색 테두리 추가 */
 }
 
 .button:hover {
-        background-color: #4CAF60; /* 호버 시 색상 변경 */
-        box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강조 */
+    background-color: #4CAF60; /* 호버 시 색상 변경 */
+    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강조 */
 }
 
 .button:active {
-        background-color: #4CAF60;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 클릭 시 그림자 감소 */
+    background-color: #4CAF60;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 클릭 시 그림자 감소 */
 }
-=======
-    width: 360px;
-    height: 58px;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.button-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.preset-text-default {
-    font-size: 16px;
-}
-
-.preset-border-default:focus {
-    outline: none;
-}
->>>>>>> fb5609c86054ee63336f74793e9d34692b6764d9

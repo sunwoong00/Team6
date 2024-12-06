@@ -19,7 +19,7 @@ function MainPage() {
             // "calling" 상태에서 10초 후 CallPage로 이동
             const id = setTimeout(() => {
                 console.log("10 seconds elapsed, navigating to CallPage...");
-                navigate("/call");
+                navigate("/Call");
             }, 10000);
             setTimeoutId(id);
         }
@@ -49,7 +49,7 @@ function MainPage() {
 
     const handleConfirmClick = () => {
         console.log("Confirm button clicked");
-        navigate("/llm"); // LLMPage로 이동
+        navigate("/ChatBox"); // LLMPage로 이동
     };
 
     return (
