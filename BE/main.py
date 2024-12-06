@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, EmailStr
-import firebase_admin
 from firebase_admin import credentials, db
+from dotenv import load_dotenv
+import firebase_admin
+import requests
+import os
 
 # FastAPI 앱 초기화
 app = FastAPI()
@@ -11,6 +14,15 @@ cred = credentials.Certificate("team6-8924e-firebase-adminsdk-vdshl-543124bd12.j
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://team6-8924e-default-rtdb.firebaseio.com/'  # Firebase Realtime Database URL
 })
+
+# .env 파일 로드
+load_dotenv()
+
+# API 키 가져오기
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
+if not GOOGLE_MAPS_API_KEY:
+    raise ValueError("Google Maps API Key is not set in the .env file")
 
 # Pydantic 모델
 class Login(BaseModel):
@@ -23,8 +35,15 @@ class RegisterData(BaseModel):
     password: str
     user_protector: bool
 
+'''class GPSData(BaseModel):
+    username: str
+    latitude: float
+    longitude: float'''
+
 class GPS(BaseModel):
     username: str
+    latitude: float
+    longitude: float
 
 
 # /login 엔드포인트
@@ -58,10 +77,14 @@ async def register(data: RegisterData):
             'password': data.password,
             'user_protector': data.user_protector,
             'gps': None,
+            'address': None,
             'stt_data': None,
             'slm_llm': None,
             'slm_data': None,
-            'llm_data': None
+            'llm_data': {
+                'new': False,
+                'reply': ''
+            }
         })
         return {"message": "User saved successfully"}
     except Exception as e:
@@ -69,7 +92,7 @@ async def register(data: RegisterData):
 
 
 # /get_info 엔드포인트
-@app.get("/get_info")
+@app.get("/get-info")
 async def get_info(username: str = Query(..., description="The username to search for")):
     try:
         # Firebase Database 참조
@@ -91,7 +114,122 @@ async def get_info(username: str = Query(..., description="The username to searc
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching user info: {str(e)}")
 
+
 '''
 # /gps 엔드포인트
 @app.post("/gps")
-'''
+async def update_gps(data: GPSData):
+    try:
+        # Google Maps Reverse Geocoding API 호출
+        geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            "latlng": f"{data.latitude},{data.longitude}",
+            "key": GOOGLE_MAPS_API_KEY
+        }
+        response = requests.get(geocode_url, params=params)
+        response_data = response.json()
+
+        if response.status_code != 200 or not response_data.get("results"):
+            raise HTTPException(status_code=400, detail="Unable to fetch address from Google Maps API")
+
+        # 주소 정보 추출
+        address = response_data["results"][0]["formatted_address"]
+
+        # Firebase Database에서 username에 해당하는 사용자 찾기
+        ref = db.reference('users')
+        users = ref.get()
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        for key, value in users.items():
+            if value.get("username") == data.username:
+                # 사용자 데이터 업데이트
+                user_ref = ref.child(key)
+                user_ref.update({
+                    "latitude": data.latitude,
+                    "longitude": data.longitude,
+                    "address": address
+                })
+                return {
+                    "message": f"Location updated for user {data.username}",
+                    "latitude": data.latitude,
+                    "longitude": data.longitude,
+                    "address": address
+                }
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{data.username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
+        '''
+
+
+# /update-gps 엔드포인트
+@app.post("/update-gps")
+async def update_gps(data: GPS):
+    try:
+        # Firebase Database 참조
+        ref = db.reference('users')
+        users = ref.get()  # 모든 사용자 데이터 가져오기
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # username에 해당하는 사용자 찾기 및 업데이트
+        for key, value in users.items():
+            if value.get("username") == data.username:
+                user_ref = ref.child(key)
+                user_ref.update({
+                    "latitude": data.latitude,
+                    "longitude": data.longitude
+                })
+                return {
+                    "message": f"Location updated for user {data.username}",
+                    "latitude": data.latitude,
+                    "longitude": data.longitude
+                }
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{data.username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
+
+
+@app.post("/get-llm-data")
+async def get_llm_data(username: str):
+    try:
+        # Firebase Database 참조
+        ref = db.reference('users')
+        users = ref.get()  # 모든 사용자 데이터 가져오기
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # username에 해당하는 사용자 찾기
+        for key, value in users.items():
+            if value.get("username") == username:
+                llm_data = value.get("llm_data", {})
+                if llm_data.get("new") == True:  # Boolean True 확인
+                    # 'reply' 값 저장 후 업데이트
+                    reply = llm_data.get("reply", "")
+                    user_ref = ref.child(key)
+                    user_ref.update({
+                        "llm_data": {
+                            **llm_data,  # 기존 llm_data 유지
+                            "new": False,  # 'new' 값을 Boolean False로 변경
+                            "reply": ""  # 'reply' 값을 빈 문자열로 변경
+                        }
+                    })
+                    return {"reply": reply}
+
+                # 'new' 값이 False인 경우 아무 작업 안 함
+                return {"message": "No new data to process"}
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching llm data: {str(e)}")
