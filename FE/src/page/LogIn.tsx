@@ -4,6 +4,7 @@ import Button from "../component/Button";
 import ICON from "../icon";
 import InputBox from "../component/InputBox";
 import "./LogIn.css";
+import { login } from "../api/auth";
 
 function LogInPage() {
     const navigate = useNavigate();
@@ -12,8 +13,14 @@ function LogInPage() {
         navigate("/SignUp"); // 회원가입 페이지로 이동
     };
 
-    const handleLoginClick = () => {
-        navigate("/Main"); // 메인 페이지로 이동
+    const handleLoginClick = async () => {
+        try {
+            const response = await login({ id: '', password: '', })
+            console.log(response);
+            navigate("/Main"); 
+        } catch {
+            console.log("Error login account")
+        }
     };
 
     return (
