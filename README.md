@@ -47,6 +47,7 @@
 5. 위험 상황 발생시 보호자에게 연락
 
 6. 보호자에게 연락되지 않을 경우 LLM이 직접 해결법을 만들어서 제시
+   
 
 
 ### 개발자들  (ㄱ-ㄴ-ㄷ)
@@ -63,9 +64,3 @@
 
 **임동현** - https://github.com/hyunee0110
 
-</a>
-
-<a href="https://whoami125.notion.site/AWS-EC2-4fc2808f27664eddba10483ccaa127f6">
-    <img src="https://img.shields.io/badge/EC2 생성 및 보안 설정-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/>
-</a>
