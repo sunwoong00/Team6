@@ -1,0 +1,94 @@
+
+/* 전체 페이지 스타일 */
+.login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+/* 로고 스타일 */
+.login-logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* 로그인 컨테이너 */
+.login-container {
+    width: 90%;
+    max-width: 400px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* 로그인 제목 */
+.login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 입력 폼 컨테이너 */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* 링크 스타일 */
+.link-container {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.forgot-password, .sign-up {
+    color: #5DB075;
+    text-decoration: none;
+}
+
+.forgot-password:hover, .sign-up:hover {
+    text-decoration: underline;
+}
+
+/* 버튼 스타일 */
+.login-button {
+    width: 100%;
+    height: 50px;
+    background-color: #5DB075;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+/* 소셜 로그인 */
+.social-login-container {
+    text-align: center;
+}
+
+.social-login-container span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #888;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

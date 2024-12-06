@@ -1,0 +1,11 @@
+/* 전체 컨테이너 스타일 */
+.question-container {
+    width: 320px;
+    height: 356px;
+    background-color: #5db075; /* 초록색 배경 */
+    border-radius: 16px; /* 둥근 모서리 */
+    display: flex; /* 중앙 정렬을 위한 Flexbox */
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
