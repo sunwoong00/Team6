@@ -1,0 +1,31 @@
+.input-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+}
+
+.title {
+    color: #000000;
+    text-align: left;
+    font-family: "Inter-Regular", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    position: relative;
+    width: 95px;
+    height: 18px;
+    margin-bottom: 20px;
+}
+
+.input-box {
+    box-sizing: border-box;
+    position: relative;
+    overflow: visible;
+    width: 358px;
+    height: 56px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 16px;
+    /* border-radius: 24px; */
+    border: 1px solid #D8DADC; 
+    background-color: white;
+}
