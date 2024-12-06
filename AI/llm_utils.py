@@ -35,9 +35,35 @@ def response_1_prompt(text):
     return base_prompt_1 + text + base_prompt_2
 
 
-def llm_response(summary_text):
+def response_2_prompt(text):
+    base_prompt_1 = '''당신이 지금 겪고 있는 상황에 대해 도와줄게요. 아래의 질문에 답을 해주세요. 나는 안전을 가장 중요하게 생각하며, 어떤 경우든 위험할 수 있는 상황이라면 당신에게 행동을 권하지 않고 대기하라고 할 거예요. 하지만, 위험하지 않은 질문이라면 선택이나 결정을 도와줄게요.
+
+지금 하고 싶은 일이 무엇인지, 또는 결정하기 어려운 일이 무엇인지 간단히 설명해 주세요.
+만약, 그 일이 위험과 관련되었다면, (예: 길 건너기, 화기 다루기 등) 바로 행동하지 말고, 도움이 올 때까지 대기하세요. 이럴 때는 주변에 도움을 요청하거나, 보호자 또는 신뢰할 수 있는 사람에게 전화하세요.
+만약 그 일이 일상적인 선택과 관련된 거라면, 내가 필요한 정보를 알려드릴게요. 예를 들어, 어떤 음료를 마실지, 어떤 물건을 선택할지 고민이 된다면, 각 선택의 장점과 단점을 간단히 설명해 줄게요.
+예시 질문 1: "횡단보도가 파란불인데 차가 오고 있어요. 어떻게 해야 하나요?"
+답변: "차가 보인다면, 길을 건너지 말고 안전한 장소에서 보호자에게 전화하세요. 절대로 혼자 판단하지 말고, 대기하세요."
+
+예시 질문 2: "음료수 두 개 중 뭘 마실지 모르겠어요. 한 개는 주스이고, 다른 한 개는 탄산음료예요."
+답변: "주스는 건강에 더 좋을 수 있고, 탄산음료는 시원하고 청량한 느낌을 줄 거예요. 당신이 원하는 기분에 따라 선택하면 좋겠어요!"
+
+어떤 경우든, 나와 함께라면 당신은 안전하고, 올바른 선택을 할 수 있을 거예요. 그럼, 지금 하고 싶은 일에 대해 말해주세요.
+질문: '''
+
+    base_prompt_2 = '''답변:'''
+
+    return base_prompt_1 + text + '\n' + base_prompt_2
+
+
+def llm_response_1(summary_text):
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(response_1_prompt(summary_text))
+    print(response.text)
+
+
+def llm_response_2(summary_text):
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(response_2_prompt(summary_text))
     print(response.text)
 
 # #위험상황 예시
