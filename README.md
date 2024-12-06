@@ -1,7 +1,8 @@
 # 위드미:
 # Multimodal Input기반 지적장애인/경계선 지능인을 위한 안전도우미
 
-<img src="https://drive.google.com/uc?export=view&id=12ogQey6rqwke_tgX9q2ydozusaihkGYa" alt="drawing" style="width:1000px;"/>
+<img src="![image](https://github.com/user-attachments/assets/86da15ab-f193-4dc8-a3ad-3c2ce7a43237)
+" alt="drawing" style="width:1000px;"/>
 
 지적장애인과 경계선 지능인들은 일상생활에서 위험 상황에 처할 가능성이 높고, 이를 인지하거나 적절히 대처하기 어려운 경우가 많습니다. **"위드미"**는 멀티모달 입력(음성, 텍스트, 이미지 등)을 기반으로 사용자에게 상황에 맞는 안전 정보를 제공하고, 위험 상황을 예방하거나 신속히 대처할 수 있도록 지원하는 스마트 안전 도우미 서비스입니다.
 
