@@ -55,14 +55,14 @@ def speech_to_text(file_path: str) -> str:
     return text
 
 
-def stt(file_path, output_file, record_seconds = 5):
+def stt(file_path, output_file, record_seconds = 10):
     record_audio(output_file, record_seconds)
     text = speech_to_text(file_path)
     return text
 
 
-if __name__ == "__main__":
-    audio_file = "recorded_audio.wav"  # 저장할 오디오 파일 이름
-    record_audio(output_file=audio_file, record_seconds=5)  # 5초 녹음
-    text = speech_to_text(file_path=audio_file)  # 녹음된 파일을 텍스트로 변환
-    print(f"최종 변환 텍스트: {text}")
+# if __name__ == "__main__":
+#     audio_file = "recorded_audio.wav"  # 저장할 오디오 파일 이름
+#     record_audio(output_file=audio_file, record_seconds=5)  # 5초 녹음
+#     text = speech_to_text(file_path=audio_file)  # 녹음된 파일을 텍스트로 변환
+#     print(f"최종 변환 텍스트: {text}")
