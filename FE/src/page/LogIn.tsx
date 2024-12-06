@@ -1,10 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../component/Button";
 import ICON from "../icon";
 import InputBox from "../component/InputBox";
 import "./LogIn.css";
 
 function LogInPage() {
+    const navigate = useNavigate();
+
+    const handleSignUpClick = () => {
+        navigate("/SignUp"); // 회원가입 페이지로 이동
+    };
+
+    const handleLoginClick = () => {
+        navigate("/Main"); // 메인 페이지로 이동
+    };
+
     return (
         <div className="app-frame">
             <div className="login-page">
@@ -19,9 +30,11 @@ function LogInPage() {
                     </div>
                     <div className="link-container">
                         <a href="#" className="forgot-password">비밀번호를 잊으셨나요?</a>
-                        <a href="#" className="sign-up">회원가입</a>
+                        <a onClick={handleSignUpClick} className="sign-up">회원가입</a>
                     </div>
-                    <Button className="login-button">로그인</Button>
+                    <Button className="login-button" onClick={handleLoginClick}>
+                        로그인
+                    </Button>
                     <div className="social-login-container">
                         <span>Or Login with</span>
                         <div className="social-icons">

@@ -2,6 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StartPage from "./page/Start";
 import LogInPage from "./page/LogIn";
+import SignUpPage from "./page/SignUp";
+import MainPage from "./page/Main";
+import CallPage from "./page/Call";
 
 function App() {
     return (
@@ -11,6 +14,9 @@ function App() {
                 <Route path="/" element={<StartPage />} />
                 {/* LoginPage는 "/logIn" 경로 */}
                 <Route path="/LogIn" element={<LogInPage />} />
+                <Route path="/SignUp" element={<SignUpPage />} />
+                <Route path="/Main" element={<MainPage />} />
+                <Route path="/Call" element={<CallPage />} />
             </Routes>
         </Router>
     );
