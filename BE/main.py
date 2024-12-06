@@ -1,10 +1,14 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import firebase_admin
 import requests
 import os
+# llm_utils.py 파일에서 llm_response_2 함수 가져오기
+from ..AI.llm_utils import llm_response_2
+# 상대경로를 통해 slm_response 함수 가져오기
+from ..AI.slm_utils import slm_response
 
 # FastAPI 앱 초기화
 app = FastAPI()
@@ -90,7 +94,6 @@ async def register(data: RegisterData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
 
-
 # /get_info 엔드포인트
 @app.get("/get-info")
 async def get_info(username: str = Query(..., description="The username to search for")):
@@ -113,6 +116,58 @@ async def get_info(username: str = Query(..., description="The username to searc
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching user info: {str(e)}")
+
+
+@app.post("/upload-stt")
+async def upload_stt(username: str, input_text: str):
+    try:
+        # Firebase Database 참조
+        ref = db.reference('users')
+        users = ref.get()  # 모든 사용자 데이터 가져오기
+
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # username에 해당하는 사용자 찾기
+        for key, value in users.items():
+            if value.get("username") == username:
+                # 현재 stt_data 가져오기
+                stt_data = value.get("stt_data", "")
+                updated_stt_data = stt_data + input_text  # 기존 데이터에 입력 텍스트 추가
+
+                # stt_data 업데이트
+                user_ref = ref.child(key)
+                if len(updated_stt_data) > 300:  # 길이가 300자를 초과하면 처리
+                    # SLM 함수 호출
+                    summary_response = slm_response(updated_stt_data)
+                    summary = summary_response.get("요약")
+
+                    if not summary:
+                        raise HTTPException(status_code=400, detail="SLM response does not contain '요약'.")
+
+                    # 요약 데이터를 slm_data에 저장하고 stt_data를 초기화
+                    user_ref.update({
+                        "slm_data": summary,
+                        "stt_data": ""  # stt_data 초기화
+                    })
+
+                    return {
+                        "message": "SLM response processed and stored",
+                        "summary": summary,
+                        "stt_data": ""  # 반환 데이터에 초기화된 stt_data 포함
+                    }
+                else:
+                    # 길이가 300자 이하인 경우 업데이트만 수행
+                    user_ref.update({
+                        "stt_data": updated_stt_data
+                    })
+                    return {"message": "STT data updated successfully", "stt_data": updated_stt_data}
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error uploading STT data: {str(e)}")
 
 
 '''
@@ -165,9 +220,8 @@ async def update_gps(data: GPSData):
         raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
         '''
 
-
-# /update-gps 엔드포인트
-@app.post("/update-gps")
+# /gps 엔드포인트
+@app.post("/update_gps")
 async def update_gps(data: GPS):
     try:
         # Firebase Database 참조
@@ -233,3 +287,21 @@ async def get_llm_data(username: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching llm data: {str(e)}")
+
+
+@app.post("/get-llm-response2")
+async def get_llm_response2(input_text: str):
+    try:
+        # ../AI/llm_utils.py에 정의된 LLM 함수 호출
+        response = llm_response_2(input_text)
+
+        # JSON 응답에서 "요약" 키 추출
+        summary = response.get("요약")
+        if not summary:
+            raise HTTPException(status_code=400, detail="Response does not contain '요약'.")
+
+        # 요약 내용 반환
+        return {"summary": summary}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing input: {str(e)}")
