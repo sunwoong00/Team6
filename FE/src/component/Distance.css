@@ -1,0 +1,18 @@
+.distance-com {
+    display: flex; /* 수평으로 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    gap: 10px; /* 아이콘과 텍스트 사이 간격 */
+    width: 150px;
+}
+
+.user-icon {
+    height: 40px; /* 아이콘 크기 조정 */
+    width: 40px; /* 아이콘 크기 조정 */
+}
+
+.meter {
+    color: #000000;
+    text-align: left;
+    font-size: 36px;
+    font-weight: 500;
+}

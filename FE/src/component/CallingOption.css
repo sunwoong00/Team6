@@ -1,0 +1,44 @@
+/* 전체 컴포넌트 스타일 */
+.icon-grid {
+    width: 343px;
+    height: 369px;
+    background-color: #f5f5f5; /* 배경 색상 */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2x2 그리드 레이아웃 */
+    grid-template-rows: 1fr 1fr;
+    position: relative; /* 중앙 선을 그리기 위한 기준 */
+    border-radius: 16px; /* 둥근 모서리 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 */
+    overflow: hidden;
+}
+
+/* 각 아이콘 아이템 */
+.icon-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 세로 중앙선 */
+.icon-grid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background-color: #d3d3d3; /* 선 색상 */
+    transform: translateX(-50%);
+}
+
+/* 가로 중앙선 */
+.icon-grid::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background-color: #d3d3d3; /* 선 색상 */
+    transform: translateY(-50%);
+}
