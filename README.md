@@ -19,6 +19,8 @@
 ##### LLM
 *
 
+<img width="716" alt="image" src="https://github.com/user-attachments/assets/187a2207-d650-40bc-b882-e83fe46d43d5">
+
 ---
 
 ### 주요 기능
