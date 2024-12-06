@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, EmailStr
 import firebase_admin
 from firebase_admin import credentials, db
@@ -67,6 +67,29 @@ async def register(data: RegisterData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
 
+
+# /get_info 엔드포인트
+@app.get("/get_info")
+async def get_info(username: str = Query(..., description="The username to search for")):
+    try:
+        # Firebase Database 참조
+        ref = db.reference('users')
+        users = ref.get()  # 모든 사용자 데이터 가져오기
+
+        # Firebase에 데이터가 없는 경우 처리
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # username에 해당하는 사용자 찾기
+        for key, value in users.items():
+            if value.get("username") == username:
+                return {"user": value}
+
+        # username이 없는 경우
+        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching user info: {str(e)}")
 
 '''
 # /gps 엔드포인트
