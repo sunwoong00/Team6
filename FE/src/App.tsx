@@ -5,6 +5,7 @@ import LogInPage from "./page/LogIn";
 import SignUpPage from "./page/SignUp";
 import MainPage from "./page/Main";
 import CallPage from "./page/Call";
+import ChatBoxPage from './page/LLM'
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/SignUp" element={<SignUpPage />} />
                 <Route path="/Main" element={<MainPage />} />
                 <Route path="/Call" element={<CallPage />} />
+                <Route path="/ChatBox" element={<ChatBoxPage />}></Route>
             </Routes>
         </Router>
     );
