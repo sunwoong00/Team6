@@ -4,11 +4,17 @@ from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import firebase_admin
 import requests
-import os
-# llm_utils.py 파일에서 llm_response_2 함수 가져오기
-from ..AI.llm_utils import llm_response_2
-# 상대경로를 통해 slm_response 함수 가져오기
-from ..AI.slm_utils import slm_response
+import sys, os
+# llm_response_1 함수 가져오기
+# from ..AI.llm_utils import llm_response_1
+# # llm_utils.py 파일에서 llm_response_2 함수 가져오기
+# from ..AI.llm_utils import llm_response_2
+# # 상대경로를 통해 slm_response 함수 가져오기
+# from ..AI.slm_utils import slm_response
+
+sys.path.append(os.path.abspath("../AI"))
+from llm_utils import llm_response_1, llm_response_2
+from slm_utils import slm_response
 
 # FastAPI 앱 초기화
 app = FastAPI()
@@ -80,11 +86,10 @@ async def register(data: RegisterData):
             'id': data.id,
             'password': data.password,
             'user_protector': data.user_protector,
-            'gps': None,
-            'address': None,
-            'stt_data': None,
-            'slm_llm': None,
-            'slm_data': None,
+            'latitude': 0,
+            'longitude' : 0,
+            'stt_data': '',
+            'slm_data': '',
             'llm_data': {
                 'new': False,
                 'reply': ''
@@ -93,6 +98,7 @@ async def register(data: RegisterData):
         return {"message": "User saved successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
+
 
 # /get_info 엔드포인트
 @app.get("/get-info")
@@ -137,7 +143,7 @@ async def upload_stt(username: str, input_text: str):
 
                 # stt_data 업데이트
                 user_ref = ref.child(key)
-                if len(updated_stt_data) > 300:  # 길이가 300자를 초과하면 처리
+                if len(updated_stt_data) > 350:  # 길이가 350자를 초과하면 처리
                     # SLM 함수 호출
                     summary_response = slm_response(updated_stt_data)
                     summary = summary_response.get("요약")
@@ -157,10 +163,33 @@ async def upload_stt(username: str, input_text: str):
                         "stt_data": ""  # 반환 데이터에 초기화된 stt_data 포함
                     }
                 else:
-                    # 길이가 300자 이하인 경우 업데이트만 수행
+                    # 길이가 350자 이하인 경우 업데이트만 수행
                     user_ref.update({
                         "stt_data": updated_stt_data
                     })
+
+                    # LLM 함수 호출
+                    llm_response = llm_response_1(updated_stt_data)
+                    is_risky = llm_response.get("위험", False)
+
+                    if is_risky:
+                        # "위험"이 True인 경우 "reply" 및 "new" 업데이트
+                        reply = llm_response.get("요약", "")
+                        llm_data = value.get("llm_data", {})
+                        user_ref.update({
+                            "llm_data": {
+                                **llm_data,  # 기존 llm_data 유지
+                                "reply": reply,
+                                "new": True
+                            }
+                        })
+
+                        return {
+                            "message": "LLM response indicates risk. Reply stored in llm_data.",
+                            "reply": reply
+                        }
+
+                    # "위험"이 False인 경우 업데이트만 수행
                     return {"message": "STT data updated successfully", "stt_data": updated_stt_data}
 
         # username이 없는 경우
@@ -169,56 +198,6 @@ async def upload_stt(username: str, input_text: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading STT data: {str(e)}")
 
-
-'''
-# /gps 엔드포인트
-@app.post("/gps")
-async def update_gps(data: GPSData):
-    try:
-        # Google Maps Reverse Geocoding API 호출
-        geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json"
-        params = {
-            "latlng": f"{data.latitude},{data.longitude}",
-            "key": GOOGLE_MAPS_API_KEY
-        }
-        response = requests.get(geocode_url, params=params)
-        response_data = response.json()
-
-        if response.status_code != 200 or not response_data.get("results"):
-            raise HTTPException(status_code=400, detail="Unable to fetch address from Google Maps API")
-
-        # 주소 정보 추출
-        address = response_data["results"][0]["formatted_address"]
-
-        # Firebase Database에서 username에 해당하는 사용자 찾기
-        ref = db.reference('users')
-        users = ref.get()
-
-        if not users:
-            raise HTTPException(status_code=404, detail="No users found")
-
-        for key, value in users.items():
-            if value.get("username") == data.username:
-                # 사용자 데이터 업데이트
-                user_ref = ref.child(key)
-                user_ref.update({
-                    "latitude": data.latitude,
-                    "longitude": data.longitude,
-                    "address": address
-                })
-                return {
-                    "message": f"Location updated for user {data.username}",
-                    "latitude": data.latitude,
-                    "longitude": data.longitude,
-                    "address": address
-                }
-
-        # username이 없는 경우
-        raise HTTPException(status_code=404, detail=f"User with username '{data.username}' not found")
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating GPS: {str(e)}")
-        '''
 
 # /gps 엔드포인트
 @app.post("/update_gps")
