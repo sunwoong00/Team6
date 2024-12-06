@@ -38,10 +38,4 @@ async def login(data: LoginData):
         })
         return {"message": "User saved successfully"}
     except Exception as e:
-<<<<<<< HEAD
         raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
-=======
-        raise HTTPException(status_code=500, detail=f"Error saving user: {str(e)}")
-    
-# /gps
->>>>>>> b4afd638cbcaf81c847431fd5e71e057f452374d
