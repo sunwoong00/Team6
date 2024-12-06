@@ -16,8 +16,9 @@
 * FastAPI기반 안전도우미 backend 코드
 * firebase기반 데이터베이스 구축
 
-##### LLM
-*
+##### LM
+* slm과 llm의 조합으로 효율적인 사용
+* RAG를 통한 최신 정보 업데이트 가능
 
 <img width="716" alt="image" src="https://github.com/user-attachments/assets/187a2207-d650-40bc-b882-e83fe46d43d5">
 
