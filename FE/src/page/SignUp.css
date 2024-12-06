@@ -16,7 +16,7 @@
 
 /* 회원가입 페이지 컨테이너 */
 .sign-up-page {
-    width: 90%;
+    width: 100%;
     max-width: 375px;
     background-color: #ffffff;
     padding: 20px 25px;
