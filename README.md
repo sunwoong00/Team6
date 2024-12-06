@@ -1,4 +1,5 @@
-# 위드미: Multimodal Input기반 지적장애인/경계선 지능인을 위한 안전도우미
+# 위드미:
+# Multimodal Input기반 지적장애인/경계선 지능인을 위한 안전도우미
 
 <img src="https://drive.google.com/uc?export=view&id=12ogQey6rqwke_tgX9q2ydozusaihkGYa" alt="drawing" style="width:1000px;"/>
 
