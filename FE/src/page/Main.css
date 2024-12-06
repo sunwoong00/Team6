@@ -1,0 +1,45 @@
+.main-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100vh;
+    background-color: white;
+    padding-top: 100px;
+    box-sizing: border-box;
+}
+
+.top-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 30px;
+}
+
+.distance-container {
+    margin-top: 30px; /* Distance 요소 아래로 10px 내리기 */
+}
+
+.toggle-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.time {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5db075;
+}
+
+.question-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    margin-top: 20px;
+}

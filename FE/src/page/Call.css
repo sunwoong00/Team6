@@ -1,0 +1,54 @@
+/* 전체 앱 테두리 */
+.app-frame {
+    margin-top: 2.5vh;
+    width: 393px;
+    height: 95vh; /* 브라우저 높이의 95% */
+    border: 8px solid black; /* 검은색 테두리 */
+    border-radius: 16px; /* 둥근 모서리 */
+    overflow: hidden; /* 내부 요소가 튀어나오지 않도록 설정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff; /* 배경색 */
+    margin: 1.5vh auto; /* 화면 중앙 정렬 */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+}
+
+.call-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    background-color: #5db075;
+}
+
+.call-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.call-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.call-number {
+    font-size: 16px;
+    color: #000000;
+}
+
+.call-options {
+    margin-top: 50px;
+    width: 343px;
+    height: 369px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
