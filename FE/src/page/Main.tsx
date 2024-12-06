@@ -4,52 +4,37 @@ import Distance from "../component/Distance";
 import Question from "../component/Question";
 import ToggleButton from "../component/ToggleButton";
 import CallingPopup from "../component/CallingPopup";
-import ConnectFailPopup from "../component/ConnectFailPopup";
 import "./Main.css";
 
 function MainPage() {
-    const [popupType, setPopupType] = useState<"calling" | "failed" | null>(null); // 팝업 타입
+    const [popupType, setPopupType] = useState<"calling" | null>(null); // 팝업 타입
+    const [counter, setCounter] = useState(5); // 5초 카운트다운
+    const [isCountingDown, setIsCountingDown] = useState(false); // 카운트다운 시작 여부
     const navigate = useNavigate();
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null); // 타이머 ID 저장
 
     useEffect(() => {
-        console.log("Popup type updated:", popupType);
-
-        if (popupType === "calling") {
-            // "calling" 상태에서 10초 후 CallPage로 이동
-            const id = setTimeout(() => {
-                console.log("10 seconds elapsed, navigating to CallPage...");
-                navigate("/call");
-            }, 10000);
-            setTimeoutId(id);
+        if (isCountingDown && counter > 0) {
+            const interval = setInterval(() => {
+                setCounter((prevCounter) => prevCounter - 1);
+            }, 1000); // 1초마다 감소
+            return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+        } else if (isCountingDown && counter === 0) {
+            navigate("/call"); // 5초 후 CallPage로 이동
         }
-
-        return () => {
-            // 컴포넌트 언마운트 시 타이머 정리
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                console.log("Timeout cleared");
-            }
-        };
-    }, [popupType, navigate, timeoutId]);
+    }, [isCountingDown, counter, navigate]);
 
     const handleQuestionClick = () => {
         console.log("Question clicked!");
         setPopupType("calling"); // CallingPopup 표시
+        setIsCountingDown(true); // 카운트다운 시작
+        setCounter(5); // 카운터 초기화
     };
 
     const handleCancelClick = () => {
         console.log("Cancel button clicked");
-        if (timeoutId) {
-            clearTimeout(timeoutId); // 타이머 취소
-            console.log("Timeout cleared");
-        }
-        setPopupType("failed"); // ConnectFailPopup으로 전환
-    };
-
-    const handleConfirmClick = () => {
-        console.log("Confirm button clicked");
-        navigate("/llm"); // LLMPage로 이동
+        setPopupType(null); // CallingPopup 닫기
+        setIsCountingDown(false); // 카운트다운 중단
+        navigate("/llm"); // LLMPage로 바로 이동
     };
 
     return (
@@ -69,11 +54,13 @@ function MainPage() {
                 </div>
 
                 {/* 팝업 렌더링 */}
-                {popupType === "calling" && (
-                    <CallingPopup onClick={handleCancelClick} />
-                )}
-                {popupType === "failed" && (
-                    <ConnectFailPopup onClick={handleConfirmClick} />
+                <CallingPopup onClick={handleCancelClick} />
+
+                {/* 카운트다운 표시 */}
+                {isCountingDown && popupType === "calling" && (
+                    <div className="counter">
+                        <p>Redirecting in {counter} seconds...</p>
+                    </div>
                 )}
             </div>
         </div>

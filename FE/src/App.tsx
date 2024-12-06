@@ -18,7 +18,7 @@ function App() {
                 <Route path="/SignUp" element={<SignUpPage />} />
                 <Route path="/Main" element={<MainPage />} />
                 <Route path="/Call" element={<CallPage />} />
-                <Route path="/ChatBox" element={<ChatBoxPage />}></Route>
+                <Route path="/LLM" element={<ChatBoxPage />}></Route>
             </Routes>
         </Router>
     );
