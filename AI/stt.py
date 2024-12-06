@@ -2,7 +2,6 @@ import pyaudio
 import wave
 import whisper
 
-
 def record_audio(output_file: str, record_seconds: int = 5):
     format = pyaudio.paInt16
     channels = 1
