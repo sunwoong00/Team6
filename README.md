@@ -68,23 +68,18 @@ koElectra 필요 라이브러리
 
 ### 개발자들  (ㄱ-ㄴ-ㄷ)
 
-**김하종** - https://github.com/WhoAmI125
+**김재민** - https://github.com/JMKim101
 
-**박지연** - https://github.com/JIGOOOD
+**방선웅** - https://github.com/sunwoong00
 
-**방선웅** - https://github.com/sunwoongskku
+**안상현** - https://github.com/Ahnsanghyun-hi
 
-**서유정** - https://github.com/hoongel1004
+**안종현** - https://github.com/aj0hnd
 
-**송지은** - https://github.com/thdwldmszz
+**유챤이** - https://github.com/qianyi-yu
 
-**이현민** - https://github.com/lhm6199
+**임동현** - https://github.com/hyunee0110
 
-### 멘토
-
-박희선 - 성균관대학교 산학협력 및 지도 교수
-
----
 
 ### 관련 링크
 
