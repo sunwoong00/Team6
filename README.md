@@ -9,10 +9,11 @@
 ### Repository 설명
 
 ##### Frontend
-* React기반 
+* React기반 안전도우미 frontend 코드
 
 ##### Backend
-* FastAPI기반 
+* FastAPI기반 안전도우미 backend 코드
+* firebase DB
 
 ##### LLM
 
@@ -22,29 +23,25 @@
 
 - 로그인
 - 회원가입
+- 실시간 gps 기능
 - 
 
 ---
 
 ### 안전도우미 사용 방식
 
-1. 레시피를 입력 받는다
+1. 사용자와 보호자가 gps 거리상으로 멀리 떨어졌을 때 작동한다.
 
-2. 조리동작을 추출한다
-    - EtriOpenAPI를 통해 동사(VV)를 분별, 이후 딕션너리를 통해 단순 동사인지 조리동작에 해당하는 동사인지 판단 → 조리동작을 기준으로 sequences 분리 <a href="https://github.com/iiVSX/lesik/tree/master/Backend#readme">
-    <img src="https://img.shields.io/badge/백앤드 README-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/></a>
+2. 사용자 주변 음성을 실시간으로 분석
+    - 버튼을 누른 경우 80초 동안 주변 소리 분석 시작
         
-3. 레시피 구성 요소들을 추출한다
-    - 개체명 인식을 통해 식재료, 용량, 첨가물, 온도, 시간을 추출한다
-    - 학습시킨 KoELECTRA를 사용하여 개체명 인식을 진행하고 추가적으로 Rule-based을 통해 발견하지 못한 요소들을 딕셔너리를 통해 찾아낸다 <a href="https://github.com/iiVSX/lesik/blob/master/KoELECTRA/README.md">
-    <img src="https://img.shields.io/badge/KoELECTRA README-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/></a>
-        
-4. 레시피 부가 요소 추출한다
-    - Rule-Based를 통해 해당 조리 문장에 알맞은 조리도구를 찾아낸다 <a href="https://github.com/iiVSX/lesik/tree/master/Backend#readme">
-    <img src="https://img.shields.io/badge/백앤드 README-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/></a>
+3. 주변 소리를 SLM 기반으로 요약
+
+4. 요약한 내용에 대해서 LLM을 통한 위험 상황 분석
+
+5. 위험 상황 발생시 보호자에게 연락
+
+6. 보호자에게 연락되지 않을 경우 LLM이 직접 해결법을 만들어서 제시
 
 
 ### 개발자들  (ㄱ-ㄴ-ㄷ)
@@ -61,30 +58,6 @@
 
 **임동현** - https://github.com/hyunee0110
 
-
-### 관련 링크
-
-<a href="https://docs.google.com/presentation/d/1eMl0jOE0LA6ZvWR7yKkrVwtqXevlYt39/edit#slide=id.p1">
-    <img src="https://img.shields.io/badge/발표자료 파워포인트-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/>
-</a>
-
-
-<a href="https://github.com/iiVSX/lesik/blob/master/KoELECTRA/README.md">
-    <img src="https://img.shields.io/badge/KoELECTRA Readme-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/>
-</a>
-
-
-<a href="https://github.com/sunwoongskku/lesik/blob/master/Crawling/README.md">
-    <img src="https://img.shields.io/badge/Crawling Readme-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/>
-</a>
-
-
-<a href="https://github.com/iiVSX/lesik/tree/master/Backend#readme">
-    <img src="https://img.shields.io/badge/Backend Readme-<COLOR>"
-        style="height : auto; margin-left : 8px; margin-right : 8px;"/>
 </a>
 
 <a href="https://whoami125.notion.site/AWS-EC2-4fc2808f27664eddba10483ccaa127f6">
